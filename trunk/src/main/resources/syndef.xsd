@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:rods="http://www.rods.pitt.edu/syndef"
+            targetNamespace="http://www.rods.pitt.edu/syndef"
+            xmlns="http://www.rods.pitt.edu/syndef"
+            elementFormDefault="qualified"
+            version="$Revision: 1.3 $">
+
+    <xsd:annotation>
+        <xsd:documentation>Schema describes mapping of syndromes to conditions for chief complaint classification.  Author: Jeremy Espino MD
+        </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:element name="Syndrome" type="rods:SyndromeType"/>
+
+    <xsd:complexType name="SyndromeType">
+        <xsd:annotation>
+            <xsd:documentation>A syndrome defined by concepts and search string/regex.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="syndromeName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <!--arbitrary name of the syndrome-->
+
+            <xsd:element name="umlsConcept" type="rods:ConceptType" maxOccurs="1"/>
+            <!--optional umls concept for this syndrome-->
+
+            <xsd:element name="description" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <!--description-->
+
+            <xsd:element name="id" type="xsd:integer" minOccurs="1" maxOccurs="1"/>
+            <!--id in the repository-->
+
+            <xsd:element name="parentId" type="xsd:integer" minOccurs="0" maxOccurs="1"/>
+            <!--parent id in the repository-->
+
+            <xsd:element name="author" type="xsd:string" minOccurs="1"/>
+            <!--author name-->
+
+            <xsd:element name="lastUpdateDate" type="xsd:date" minOccurs="1" maxOccurs="1"/>
+            <!--last updated by author-->
+
+            <xsd:element name="condition" type="rods:ConditionType" minOccurs="0" maxOccurs="unbounded"/>
+            <!--a list of conditions-->
+
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="ConditionType">
+        <xsd:annotation>
+            <xsd:documentation>The condition(s) that the syndrome matches. Multiple concepts and multipe search strings
+                can be used. Each search string is defined by the string, type of search and reason for inclusion
+                of the search string.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="conditionName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <!--arbitrary condition name-->
+
+            <xsd:element name="description" type="xsd:string" maxOccurs="1"/>
+            <!--description-->
+
+            <xsd:element name="primaryUMLSConcept" type="rods:ConceptType" minOccurs="1" maxOccurs="1"/>
+            <!--primary UMLS concept-->
+
+            <xsd:element name="relatedUMLSConcept" type="rods:ConceptType" minOccurs="0" maxOccurs="unbounded"/>
+            <!--related UMLS concepts as a list-->
+
+            <xsd:element name="patternMatch" type="rods:PatternMatchType" minOccurs="0" maxOccurs="unbounded"/>
+            <!--pattern match strings as a list-->
+
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="PatternMatchType">
+        <xsd:annotation>
+            <xsd:documentation>The search string which may be a regex string or text string to match.
+                It is assumed that if the type of search is a TEXT search that any global match of the string
+                should return true.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="typeOfSearch" type="rods:TypeOfSearch" use="required"/>
+                <xsd:attribute name="searchReason" type="rods:SearchReason" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:simpleType name="TypeOfSearch">
+        <xsd:annotation>
+            <xsd:documentation>The type of search that should be performed for this text--regex, text match
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="PERL_REGEX"/>
+            <xsd:enumeration value="ORACLE_TEXT"/>
+            <xsd:enumeration value="MSSQL_TEXT"/>
+            <xsd:enumeration value="TEXT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="SearchReason">
+        <xsd:annotation>
+            <xsd:documentation>The reason to search for this string or regex--concept name, textual variant, mispelling
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="CONCEPT_NAME"/>
+            <xsd:enumeration value="TEXTUAL_VARIANT"/>
+            <xsd:enumeration value="MISPELING"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="ConceptType">
+        <xsd:annotation>
+            <xsd:documentation>The UMLS concept related to this syndrome or condition
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="cui" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <!--UMLS concept ID-->
+
+            <xsd:element name="conceptName" type="xsd:string" maxOccurs="1"/>
+            <!--UMLS concept name-->
+
+            <xsd:element name="description" type="xsd:string" maxOccurs="1"/>
+            <!--UMLS description-->
+
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>
